@@ -1,4 +1,4 @@
-package commands;
+package javaBot.commands;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -6,17 +6,16 @@ import org.json.JSONArray;
 import javaBot.DNDApi;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-public class Classes extends ListenerAdapter {
+public class ClassesCommand implements Command {
 	JDA api;
 
-	public Classes(JDA api) {
+	public ClassesCommand(JDA api) {
 		this.api = api;
 	}
 
 	@Override
-	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+	public void execute(SlashCommandInteractionEvent interaction) {
 		
 		DNDApi dndAPI = new DNDApi();
 		
@@ -31,8 +30,17 @@ public class Classes extends ListenerAdapter {
 			
 			description += (_class.getString("name") + "\n");
 		}
-		
-		event.reply(description).queue();
-		
+
+		interaction.reply(description).queue();
+	}
+
+	@Override
+	public String getName() {
+		return "classes";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Get the DND classes";
 	}
 }

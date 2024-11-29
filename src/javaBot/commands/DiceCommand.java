@@ -1,31 +1,31 @@
-package commands;
+package javaBot.commands;
 
 import java.util.Random;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-public class Dice extends ListenerAdapter {
+public class DiceCommand implements Command {
 	JDA api;
 	Random rand;
 
-	public Dice(JDA api) {
+	public DiceCommand(JDA api) {
 		this.api = api;
 		rand = new Random();
 	}
 
 	@Override
-	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+	public void execute(SlashCommandInteractionEvent interaction) {
 		int result = 0;
 		int modifier = 0;
 		int diceAmount;
 		
-		if (event.getName().equals("dice")) {
-			String diceType = event.getOption("type").getAsString(); // Get the dice type
+		if (interaction.getName().equals("dice")) {
+			String diceType = interaction.getOption("type").getAsString(); // Get the dice type
 			
 			try {
-				modifier = event.getOption("modifier").getAsInt();
+				modifier = interaction.getOption("modifier").getAsInt();
 			} catch(NullPointerException e) {
 				modifier = 0;
 			}
@@ -39,10 +39,10 @@ public class Dice extends ListenerAdapter {
 			 */
 
 			try {
-				diceAmount = event.getOption("times").getAsInt(); // Get diceAmount
+				diceAmount = interaction.getOption("times").getAsInt(); // Get diceAmount
 
 				if (diceAmount > 100) { // Dice limit
-					event.reply("Cannot role more than 100 dice at at time!").queue();
+					interaction.reply("Cannot role more than 100 dice at at time!").queue();
 					return;
 
 				}
@@ -61,8 +61,25 @@ public class Dice extends ListenerAdapter {
 				result = rand.nextInt(n) + 1 + modifier;
 			}
 
-			event.reply("" + result).queue();
+			interaction.reply("" + result).queue();
 
 		}
+	}
+
+	@Override
+	public String getName() {
+		return "dice";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Rolls dice";
+	}
+
+	@Override
+	public OptionData getOptions() {
+		return OptionData(
+
+		)
 	}
 }
