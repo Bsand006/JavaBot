@@ -11,6 +11,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
+import java.util.Optional;
+
 public class SpellCommand implements Command {
 	JDA api;
 	int rangeDistanceAmount = 0;
@@ -25,6 +27,20 @@ public class SpellCommand implements Command {
 
 		DNDApi dndAPI = new DNDApi();
 		JSONObject spellInfo = dndAPI.getSpellInfo(spell);
+
+		JSONObject components = spellInfo.getJSONObject("components");
+
+
+		// Using Boolean wrapper class instead of primitive type so it can store null values
+		Boolean vComponent = components.has("v") ? components.getBoolean("v") : null;
+		Boolean sComponent = components.has("s") ? components.getBoolean("s") : null;
+
+		JSONObject mComponent = components.has("m") ? components.getJSONObject("m") : null;
+
+		String componentsString =
+				(Boolean.TRUE.equals(vComponent) ? "V, " : "") +
+						(Boolean.TRUE.equals(sComponent) ? "S, " : "") +
+						(mComponent != null ? "M, " : "");
 
 		JSONArray entries = spellInfo.getJSONArray("entries");
 
@@ -46,21 +62,26 @@ public class SpellCommand implements Command {
 
 		String entriesDescription = "";
 
-		for (int i = 0; i < entries.length() - 1; i++) {
+		for (int i = 0; i <= entries.length() - 1; i++) {
 			entriesDescription += "- `[" + (i + 1) + "]` " + entries.getString(i) + "\n";
 		}
 
-		EmbedBuilder basicInformationEmbed;
+		EmbedBuilder basicInformationEmbed = new EmbedBuilder().setTitle("Basic Information").setDescription("`" + spell + "`")
+				.addField("Source", source, true).addField("Casting Time", timeNumber + " " + timeAction, true);
 
 		if (!rangeDistanceType.equals("self")) {
-			basicInformationEmbed = new EmbedBuilder().setTitle("Basic Information").setDescription("`" + spell + "`")
-					.addField("Source", source, true).addField("Casting Time", timeNumber + " " + timeAction, true)
+			basicInformationEmbed
 					.addField("Range", rangeType + " " + rangeDistanceAmount, true);
 		} else {
-			basicInformationEmbed = new EmbedBuilder().setTitle("Basic Information").setDescription("`" + spell + "`")
-					.addField("Source", source, true).addField("Casting Time", timeNumber + " " + timeAction, true)
+			basicInformationEmbed
 					.addField("Range", rangeType + " " + rangeDistanceType, true);
 		}
+
+		basicInformationEmbed.addField(
+				"Components",
+				componentsString.substring(0, componentsString.length() - 2),
+				true
+		);
 
 		EmbedBuilder entriesEmbed = new EmbedBuilder().setTitle("Entries").setDescription(entriesDescription);
 
