@@ -1,6 +1,6 @@
 .project
 .classpath
+.idea
 config.json
 bin/
 target/
-data/
