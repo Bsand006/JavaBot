@@ -10,6 +10,7 @@ import java.nio.file.Files;
 public class DNDApi {
 	final private String SPELL_DATA_PATH = "data/spell.json";
 
+	// Reads data from a file and returns a JSONObject with all the data
 	private JSONObject readDataFromJSON(String path) throws IOException {
 
 		// Read the contents of the file into a String
@@ -20,6 +21,7 @@ public class DNDApi {
 		return new JSONObject(content);
 	}
 
+	// Get the spell list 
 	public JSONObject getSpells() {
 		try {
 			return readDataFromJSON(SPELL_DATA_PATH);
@@ -28,6 +30,7 @@ public class DNDApi {
 		}
 	}
 
+	// Get data about a specific spell
 	public JSONObject getSpellInfo(String spellName) {
 		try {
 			JSONObject data = readDataFromJSON(SPELL_DATA_PATH);
