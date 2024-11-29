@@ -1,5 +1,7 @@
 package javaBot.commands;
 
+import net.dv8tion.jda.api.EmbedBuilder;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +25,48 @@ public class SpellCommand implements Command {
 		DNDApi dndAPI = new DNDApi();
 		JSONObject spellInfo = dndAPI.getSpellInfo(spell);
 
+		JSONArray entries = spellInfo.getJSONArray("entries");
+
+		String source = spellInfo.getString("source");
+		JSONObject timeArr = spellInfo.getJSONArray("time").getJSONObject(0);
+		int timeNumber = timeArr.getInt("number");
+		String timeAction = timeArr.getString("unit");
+
+		JSONObject range = spellInfo.getJSONObject("range");
+		String rangeType = range.getString("type");
+		JSONObject rangeDistance = range.getJSONObject("distance");
+		String rangeDistanceType = rangeDistance.getString("type");
+		int rangeDistanceAmount = rangeDistance.getInt("amount");
+
+		String entriesDescription = "";
+
+		for (int i = 0; i < entries.length() - 1; i++) {
+			entriesDescription += "- `[" + (i + 1) + "]` " + entries.getString(i) + "\n";
+		}
+
+		EmbedBuilder basicInformationEmbed = new EmbedBuilder()
+				.setTitle("Basic Information")
+				.setDescription("`" + spell + "`")
+				.addField(
+						"Source",
+						source,
+						true
+				)
+				.addField(
+						"Casting Time",
+						timeNumber + " " + timeAction,
+						true
+				)
+				.addField(
+						"Range",
+						rangeDistanceAmount + " " + rangeDistanceType,
+						true
+				);
+
+		EmbedBuilder entriesEmbed = new EmbedBuilder()
+				.setTitle("Entries")
+				.setDescription(entriesDescription);
+
 		try  {
 			spellInfo.getString("name");
 		} catch (JSONException e) {
@@ -35,9 +79,9 @@ public class SpellCommand implements Command {
 		}
 
 		if (!interaction.isAcknowledged()) {
-		    interaction.reply(spellInfo.getString("name")).queue();
+		    interaction.replyEmbeds(basicInformationEmbed.build(), entriesEmbed.build()).queue();
 		} else {
-		    interaction.getHook().sendMessage(spellInfo.getString("name")).queue();
+		    interaction.getHook().sendMessageEmbeds(basicInformationEmbed.build(), entriesEmbed.build()).queue();
 		}
 	}
 
