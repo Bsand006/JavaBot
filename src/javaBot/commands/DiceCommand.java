@@ -82,7 +82,7 @@ public class DiceCommand implements Command {
 						.addChoice("d6", "d6").addChoice("d8", "d8").addChoice("d10", "d10").addChoice("d12", "d12")
 						.addChoice("d20", "d20").addChoice("d100", "d100"),
 				new OptionData(OptionType.INTEGER, "times", "The amount of times to roll the dice"),
-				new OptionData(OptionType.INTEGER, "modifer", "The amount to modify") };
+				new OptionData(OptionType.INTEGER, "modifier", "The amount to modify") };
 
 	}
 }
