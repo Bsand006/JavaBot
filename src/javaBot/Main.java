@@ -50,30 +50,30 @@ public class Main extends ListenerAdapter {
 	    if (interaction.getName().equals("spell") && interaction.getFocusedOption().getName().equals("name")) {
 	        // Create an instance of your DNDApi class
 	        DNDApi dndAPI = new DNDApi();
-	
+
 	        // Fetch the spells data
 	        JSONObject responseObject = dndAPI.getSpells();
-	        
+
 	        // Extract the spells array from the response
-	        JSONArray spells = responseObject.getJSONArray("results");
+	        JSONArray spells = responseObject.getJSONArray("spells");
 	        ArrayList<String> formattedSpells = new ArrayList<>();
-	
+
 	        // Populate the formattedSpells list
 	        for (int i = 0; i < spells.length(); i++) { // Corrected the loop to include all elements
 	            JSONObject spellObject = spells.getJSONObject(i);
-	            formattedSpells.add(spellObject.getString("name").toLowerCase());
+	            formattedSpells.add(spellObject.getString("name"));
 	        }
-	
+
 	        // Filter the spells and create choices
 	        List<Command.Choice> options = formattedSpells.stream()
 	                .filter(word -> word.toLowerCase().startsWith(interaction.getFocusedOption().getValue().toLowerCase())) // Filter words based on user's input, case-insensitive
 	                .map(word -> new Command.Choice(word, word)) // Map words to choices
 	                .collect(Collectors.toList());
-	                
+
 	        while (options.size() > 25) { // Limit option limit to 25
 				options.remove(options.size() - 1);
 			}
-	
+
 	        // Reply with the choices
 	        interaction.replyChoices(options).queue();
 	    }

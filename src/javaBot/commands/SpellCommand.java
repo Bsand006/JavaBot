@@ -1,8 +1,6 @@
 package javaBot.commands;
 
-import java.util.ArrayList;
-
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javaBot.DNDApi;
@@ -24,21 +22,23 @@ public class SpellCommand implements Command {
 		
 		DNDApi dndAPI = new DNDApi();
 		JSONObject spellInfo = dndAPI.getSpellInfo(spell);
-		JSONArray descriptionArray = spellInfo.getJSONArray("desc");
-		
-		String descriptionString = "";
-		
-		for (int i = 0; i < descriptionArray.length() - 1; i++) {
-			String description = descriptionArray.getString(i);
-			descriptionString += "- " + description + "\n";
-		}
-		
-		if (!interaction.isAcknowledged()) {
-		    interaction.reply(descriptionString).queue();
-		} else {
-		    interaction.getHook().sendMessage(descriptionString).queue();
+
+		try  {
+			spellInfo.getString("name");
+		} catch (JSONException e) {
+			if (!interaction.isAcknowledged()) {
+				interaction.reply("Spell not found").queue();
+			} else {
+				interaction.getHook().sendMessage("Spell not found").queue();
+			}
+			return;
 		}
 
+		if (!interaction.isAcknowledged()) {
+		    interaction.reply(spellInfo.getString("name")).queue();
+		} else {
+		    interaction.getHook().sendMessage(spellInfo.getString("name")).queue();
+		}
 	}
 
 	@Override

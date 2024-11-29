@@ -1,94 +1,51 @@
 package javaBot;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.Response;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class DNDApi {
-	final private String BASE_URL = "https://www.dnd5eapi.co/api/";
+	final private String SPELL_DATA_PATH = "data/spell.json";
 
-	public JSONObject getClasses() {
-		String url = BASE_URL + "classes/";
+	private JSONObject readDataFromJSON(String path) throws IOException {
 
-		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(url);
+		// Read the contents of the file into a String
+		File file = new File(path);
+		String content = new String(Files.readAllBytes(file.toPath()));
 
-		// Make the GET request and retrieve the response
-		Response rawResponse = target.request().get();
-
-		try {
-			// Check for a successful status code
-			if (rawResponse.getStatus() == 200) {
-				// Read the response as a String
-				String jsonString = rawResponse.readEntity(String.class);
-
-				// Parse the JSON string into a JSONObject
-				return new JSONObject(jsonString);
-			} else {
-				throw new RuntimeException("Failed request with status: " + rawResponse.getStatus());
-			}
-		} finally {
-			// Ensure resources are cleaned up
-			rawResponse.close();
-			client.close();
-		}
+		// Parse the file content as JSON
+		return new JSONObject(content);
 	}
-	
+
 	public JSONObject getSpells() {
-		String url = BASE_URL + "spells";
-
-		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(url);
-
-		// Make the GET request and retrieve the response
-		Response rawResponse = target.request().get();
-
 		try {
-			// Check for a successful status code
-			if (rawResponse.getStatus() == 200) {
-				// Read the response as a String
-				String jsonString = rawResponse.readEntity(String.class);
-
-				// Parse the JSON string into a JSONObject
-				return new JSONObject(jsonString);
-			} else {
-				throw new RuntimeException("Failed request with status: " + rawResponse.getStatus());
-			}
-		} finally {
-			// Ensure resources are cleaned up
-			rawResponse.close();
-			client.close();
+			return readDataFromJSON(SPELL_DATA_PATH);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
-	
-	public JSONObject getSpellInfo(String spell) {
-		String url = BASE_URL + "spells/" + spell.replaceAll(" ", "-");
 
-		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(url);
-
-		// Make the GET request and retrieve the response
-		Response rawResponse = target.request().get();
-
+	public JSONObject getSpellInfo(String spellName) {
 		try {
-			// Check for a successful status code
-			if (rawResponse.getStatus() == 200) {
-				// Read the response as a String
-				String jsonString = rawResponse.readEntity(String.class);
+			JSONObject data = readDataFromJSON(SPELL_DATA_PATH);
 
-				// Parse the JSON string into a JSONObject
-				return new JSONObject(jsonString);
-			} else {
-				throw new RuntimeException("Failed request with status: " + rawResponse.getStatus());
+			JSONArray spells = data.getJSONArray("spells");
+
+			for (int i = 0; i < spells.length() - 1; i++) {
+				JSONObject spellData = spells.getJSONObject(i);
+				String spellDataName = spellData.getString("name");
+
+				if (spellDataName.equals(spellName)) {
+					return spellData;
+				}
 			}
-		} finally {
-			// Ensure resources are cleaned up
-			rawResponse.close();
-			client.close();
-		}
-	} 
 
+			return new JSONObject("{\"error\": \"Spell not found\"}");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+    }
 }

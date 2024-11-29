@@ -20,19 +20,19 @@ public class ClassesCommand implements Command {
 		
 		DNDApi dndAPI = new DNDApi();
 		
-		JSONObject responseObject = dndAPI.getClasses();
+//		JSONObject responseObject = dndAPI.getClasses();
 		
-		JSONArray classes = responseObject.getJSONArray("results");
+//		JSONArray classes = responseObject.getJSONArray("results");
 		
-		String description = "";
-		
-		for (int i = 0; i < classes.length() - 1; i++) {
-			JSONObject _class = classes.getJSONObject(i);
-			
-			description += (_class.getString("name") + "\n");
-		}
-
-		interaction.reply(description).queue();
+//		String description = "";
+//
+//		for (int i = 0; i < classes.length() - 1; i++) {
+//			JSONObject _class = classes.getJSONObject(i);
+//
+//			description += (_class.getString("name") + "\n");
+//		}
+//
+//		interaction.reply(description).queue();
 	}
 
 	@Override
