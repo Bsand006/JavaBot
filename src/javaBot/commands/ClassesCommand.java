@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import javaBot.DNDApi;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class ClassesCommand implements Command {
 	JDA api;
@@ -42,5 +43,11 @@ public class ClassesCommand implements Command {
 	@Override
 	public String getDescription() {
 		return "Get the DND classes";
+	}
+
+	@Override
+	public OptionData[] getOptions() {
+		// TODO Auto-generated method stub
+		return new OptionData[] {};
 	}
 }

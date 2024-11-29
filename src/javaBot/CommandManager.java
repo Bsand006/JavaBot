@@ -1,17 +1,15 @@
 package javaBot;
 
-import javaBot.commands.Command;
-
-import javaBot.commands.DiceCommand;
-import javaBot.commands.ClassesCommand;
-
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javaBot.commands.ClassesCommand;
+import javaBot.commands.Command;
+import javaBot.commands.DiceCommand;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 public class CommandManager {
 
@@ -26,7 +24,9 @@ public class CommandManager {
 
         api.updateCommands()
                 .addCommands(commands.values().stream()
-                        .map(cmd -> Commands.slash(cmd.getName(), cmd.getDescription(), cmd.getOptions()))
+                        .map(cmd -> Commands.slash(cmd.getName(), cmd.getDescription()).addOptions(
+                            cmd.getOptions()
+                        ))
                         .collect(Collectors.toList())) // Use Collectors.toList() instead
                 .queue();
 
@@ -36,6 +36,7 @@ public class CommandManager {
         commands.put(command.getName(), command);
     }
 
+    // Execute slash command
     public void handleSlashCommand(SlashCommandInteractionEvent interaction) {
         Command command = commands.get(interaction.getName());
         if (command != null) {

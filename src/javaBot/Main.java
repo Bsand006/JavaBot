@@ -13,12 +13,13 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 public class Main extends ListenerAdapter {
-	JDA api;
-	private final CommandManager commandManager;
+	public JDA api;
+	public CommandManager commandManager;
 
 	Main() {
-		String token;
 
+		// Get the bot token
+		String token;
 		try {
 			token = getBotToken();
 		} catch (IOException e) {
@@ -26,22 +27,20 @@ public class Main extends ListenerAdapter {
 		}
 
 		// Initialize the bot
-		JDA api = JDABuilder
-				.createLight(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT,
-						GatewayIntent.GUILD_MEMBERS)
-				.addEventListeners(new MessageReceivedListener(), this).build();
+		api = JDABuilder.createLight(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT,
+				GatewayIntent.GUILD_MEMBERS).addEventListeners(new MessageReceivedListener(), this).build();
 
 		this.commandManager = new CommandManager(api);
 	}
 
-	@Override
+	@Override // Pass slash command to slashcommandmanager
 	public void onSlashCommandInteraction(SlashCommandInteractionEvent interaction) {
-		commandManager.handleSlashCommand(interaction);
+		this.commandManager.handleSlashCommand(interaction);
 	}
 
-	public String getBotToken() throws IOException {
-		// Read the contents of the file into a String
+	private String getBotToken() throws IOException {
 
+		// Read the contents of the file into a String
 		File file = new File("config.json");
 		String content = new String(Files.readAllBytes(file.toPath()));
 
@@ -52,7 +51,7 @@ public class Main extends ListenerAdapter {
 		return token;
 	}
 
-	public static void main(String[] arguments) {
+	public static void main(String[] arguments) { // Run program
 		try {
 			new Main();
 		} catch (Exception e) {

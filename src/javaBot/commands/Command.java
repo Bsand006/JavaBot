@@ -1,6 +1,7 @@
 package javaBot.commands;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 /**
  * Command interface for handling bot slash commands.
@@ -33,5 +34,5 @@ public interface Command {
      *
      * @return Option data for the command
      */
-    OptionData getOptions();
+    OptionData[] getOptions();
 }
